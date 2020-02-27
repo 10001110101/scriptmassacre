@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# What I tried manually first:
+# iconv -f iso-8859-1 -t utf-8//TRANSLIT -o 06_Docustore.mediawiki 06_Docustore.mediawiki
+# pandoc -f mediawiki -t docx 06_Docustore.mediawiki -o 06_Docustore.docx
+# I want to add stuff later. Mainly this is to convert some files to translators
+
+################
+# My variables #
+################
+
+# The input encoding
+FROM_ENCODING="iso8859-1"
+
+# Convert into encoding (utf-8 for pandoc)
+TO_ENCODING="utf-8"
+
+# The input format
+FROM_FORMAT="mediawiki"
+
+# The output format
+TO_FORMAT="docx"
+
+##################
+# My conversions #
+##################
+
+# The conversion, //Translit in case you find unkown characters
+CONVERT_ENC="iconv -f $FROM_ENCODING -t $TO_ENCODING//TRANSLIT"
+
+# The format conversion
+CONVERT_FORM="pandoc -f $FROM_FORMAT -t $TO_FORMAT"
+
+##########################
+# The looping over files #
+##########################
+
+# Convert the encoding for all mediawiki files and write them into new FILENAME.utf8 files
+
+for file in "*.$FROM_FORMAT"; do
+    $CONVERT_ENC "$file" -o "$file.$TO_ENCODING"
+done
+
+# Convert all created UTF-8 files not now to *docx files
+
+# Now loop again to convert this into docx format
+
+for file in "*.$TO_ENCODING"; do
+    $CONVERT_FORM "$file" -o "$file" -o "$file.$TO_FORMAT"
+done
+
+# clean up
+
+for file in "*.$TO_ENCODING"; do
+     rm -f "$file.$TO_ENCODING"
+done
+
+exit 0
+
+
+
