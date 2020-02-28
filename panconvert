@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# What I tried manually first:
-# iconv -f iso-8859-1 -t utf-8//TRANSLIT -o 06_Docustore.mediawiki 06_Docustore.mediawiki
-# pandoc -f mediawiki -t docx 06_Docustore.mediawiki -o 06_Docustore.docx
-# I want to add stuff later. Mainly this is to convert some files to translators
+# This script simply runs through a directory
+# and encodes wrong encodings for pandoc to utf-8
+# then converts it into doc in this case
+# Finally the tmp utf-8 files are deleted again.
+
+# Yes, this could be much shorter
 
 ################
 # My variables #
@@ -37,7 +39,7 @@ CONVERT_FORM="pandoc -f $FROM_FORMAT -t $TO_FORMAT"
 
 # Convert the encoding for all mediawiki files and write them into new FILENAME.utf8 files
 
-for file in "*.$FROM_FORMAT"; do
+for file in *.$FROM_FORMAT; do
     $CONVERT_ENC "$file" -o "$file.$TO_ENCODING"
 done
 
@@ -45,17 +47,18 @@ done
 
 # Now loop again to convert this into docx format
 
-for file in "*.$TO_ENCODING"; do
+for file in *.$TO_ENCODING; do
     $CONVERT_FORM "$file" -o "$file" -o "$file.$TO_FORMAT"
 done
 
 # clean up
 
-for file in "*.$TO_ENCODING"; do
-     rm -f "$file.$TO_ENCODING"
+for file in *.$TO_ENCODING; do
+    [ -f "$file" ] && rm "$file"
 done
 
 exit 0
 
 
 
+01_Buchhaltung.mediawiki.utf-8
